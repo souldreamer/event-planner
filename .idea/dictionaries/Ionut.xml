@@ -1,12 +1,23 @@
 <component name="ProjectDictionaryState">
   <dictionary name="Ionut">
     <words>
+      <w>decl</w>
+      <w>eofline</w>
+      <w>forin</w>
       <w>nanodegree</w>
+      <w>nospace</w>
       <w>polyfills</w>
+      <w>quotemark</w>
       <w>reactivex</w>
       <w>rxjs</w>
+      <w>sourcemaps</w>
+      <w>superstatic</w>
       <w>systemjs</w>
+      <w>tsconfig</w>
+      <w>tslint</w>
+      <w>typings</w>
       <w>udacity</w>
+      <w>wahlin</w>
     </words>
   </dictionary>
 </component>
