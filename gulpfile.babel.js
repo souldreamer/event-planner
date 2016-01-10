@@ -5,10 +5,13 @@
 class Settings {
 	constructor() {
 		this.sourceApp = './app';
-		this.tsOutputPath = this.sourceApp + '/js';
-		this.allJavaScript = [this.sourceApp + '/js/**/*.js'];
+		this.dist = './dist';
+		this.tsOutputPath = this.dist + '/js';
+		this.libOutputPath = this.tsOutputPath + '/lib';
+		this.allJavaScript = [this.dist + '/js/**/*.js'];
 		this.allTypeScript = this.sourceApp + '/**/*.ts';
-		this.typings = './typings';
+		this.allAssets = [this.sourceApp + '/**/*', '!' + this.allTypeScript];
+		this.typingsOutputPath = './typings/typescriptApp.d.ts';
 		this.libraryTypeScriptDefinitions = './typings/**/*.ts';
 	}
 }
@@ -22,8 +25,10 @@ const tslint = require('gulp-tslint');
 const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const tsProject = tsc.createProject('tsconfig.json');
+const merge = require('merge2');
 const browserSync = require('browser-sync');
 const superstatic = require('superstatic');
+const typedoc = require('gulp-typedoc');
 
 gulp.task('ts-lint', () => {
 	return gulp
@@ -38,18 +43,19 @@ gulp.task('compile-ts', () => {
 		.pipe(sourcemaps.init())
 		.pipe(tsc(tsProject));
 
-	tsResult.dts.pipe(gulp.dest(settings.tsOutputPath));
-
-	return tsResult.js
-		.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest(settings.tsOutputPath));
+	return merge([
+		tsResult.dts.pipe(gulp.dest(settings.typingsOutputPath)),
+		tsResult.js
+			.pipe(sourcemaps.write('.'))
+			.pipe(gulp.dest(settings.tsOutputPath))
+	]);
 });
 
 gulp.task('clean-ts', cb => {
 	del([
 		    settings.tsOutputPath + '/**/*.js',
 		    settings.tsOutputPath + '/**/*.js.map',
-		    '!' + settings.tsOutputPath + '/lib',
+		    '!' + settings.tsOutputPath + '/lib'
 	], cb);
 });
 
@@ -73,6 +79,49 @@ gulp.task('serve', ['compile-ts', 'watch'], () => {
 			//middleware: superstatic({debug: false})
 		}
 	});
+});
+
+gulp.task('tsdoc', () => {
+	let tsDocSettings = {
+		module: 'system',
+		target: 'es5',
+		includeDeclarations: true,
+		exclude: 'node_modules/**',
+		mode: 'file',
+
+		out: './docs',
+
+		name: 'Udacity Event Planner',
+		readme: './README.md',
+		theme: 'default',
+		ignoreCompilerErrors: false,
+		hideGenerator: true,
+		verbose: true,
+		version: true
+	};
+
+	return gulp
+		.src(settings.allTypeScript)
+		.pipe(typedoc(tsDocSettings));
+});
+
+gulp.task('copy:libs', () => {
+	return gulp
+		.src([
+			'node_modules/angular2/bundles/angular2-polyfills.js',
+			'node_modules/systemjs/dist/system.src.js',
+			'node_modules/rxjs/bundles/Rx.js',
+			'node_modules/angular2/bundles/angular2.dev.js',
+			'node_modules/angular2/bundles/router.dev.js',
+			'node_modules/angular2/bundles/http.dev.js'
+		])
+		.pipe(settings.libOutputPath);
+});
+
+gulp.task('copy:assets', () => {
+	return gulp
+		.src(settings.allAssets)
+		.pipe(settings.dist);
 });
 
 gulp.task('default', ['ts-lint', 'compile-ts']);

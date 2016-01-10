@@ -14,7 +14,9 @@
       <w>superstatic</w>
       <w>systemjs</w>
       <w>tsconfig</w>
+      <w>tsdoc</w>
       <w>tslint</w>
+      <w>typedoc</w>
       <w>typings</w>
       <w>udacity</w>
       <w>wahlin</w>
