@@ -1,7 +1,12 @@
 'use strict';
 
-// based on Dan Wahlin's "Angular 2.0 in TypeScript"
-// (https://github.com/DanWahlin/AngularIn20TypeScript/)
+/**
+ * Usage: node ./node_modules/gulp/bin/gulp.js ......
+ */
+
+/**
+ * Class to hold some recurring values used further in the script
+ */
 class Settings {
 	constructor() {
 		this.sourceApp = './app';
@@ -10,13 +15,20 @@ class Settings {
 		this.libOutputPath = this.tsOutputPath + '/lib';
 		this.allJavaScript = [this.dist + '/js/**/*.js'];
 		this.allTypeScript = this.sourceApp + '/**/*.ts';
-		this.allAssets = [this.sourceApp + '/**/*', '!' + this.allTypeScript];
+		this.allTypings = [
+			'./typings/**/*.d.ts'
+		];
+		this.allAssets = [
+			this.sourceApp + '/**/*',
+			'!' + this.allTypeScript
+		];
 		this.typingsOutputPath = './typings/typescriptApp.d.ts';
 		this.libraryTypeScriptDefinitions = './typings/**/*.ts';
 	}
 }
 const settings = new Settings();
 
+const process = require('process');
 const gulp = require('gulp');
 const debug = require('gulp-debug');
 const inject = require('gulp-inject');
@@ -29,17 +41,45 @@ const merge = require('merge2');
 const browserSync = require('browser-sync');
 const superstatic = require('superstatic');
 const typedoc = require('gulp-typedoc');
+const historyApiFallback = require('connect-history-api-fallback');
+const preprocess = require('gulp-preprocess');
+const inlineNg2Template = require('gulp-inline-ng2-template');
 
-gulp.task('ts-lint', () => {
+gulp.task('ts:lint', tsLint);
+gulp.task('ts:compile', tsCompile);
+gulp.task('ts:clean', tsClean);
+gulp.task('watch', watch);
+gulp.task('ts:doc', tsDoc);
+gulp.task('copy:libs', copyLibs);
+gulp.task('copy:assets', copyAssets);
+gulp.task('serve',
+	gulp.parallel(
+		'watch',
+		gulp.series(
+			gulp.parallel(
+				'copy:libs',
+				'copy:assets',
+				gulp.series('ts:lint', 'ts:compile')
+			),
+			serve
+		)
+	)
+);
+gulp.task('default', gulp.series('serve'));
+
+function tsLint() {
 	return gulp
 		.src(settings.allTypeScript)
 		.pipe(tslint())
-		.pipe(tslint.report('prose'));
-});
+		.pipe(tslint.report('verbose'));
+}
+tsLint.description = 'Linting TypeScript sources';
 
-gulp.task('compile-ts', () => {
+function tsCompile() {
 	var tsResult = gulp
 		.src([settings.allTypeScript, settings.libraryTypeScriptDefinitions])
+		.pipe(preprocess({context: process.env}))
+		.pipe(inlineNg2Template({useRelativePaths: true}))
 		.pipe(sourcemaps.init())
 		.pipe(tsc(tsProject));
 
@@ -49,63 +89,84 @@ gulp.task('compile-ts', () => {
 			.pipe(sourcemaps.write('.'))
 			.pipe(gulp.dest(settings.tsOutputPath))
 	]);
-});
+}
+tsCompile.description = 'Compiling TypeScript sources';
 
-gulp.task('clean-ts', cb => {
-	del([
-		    settings.tsOutputPath + '/**/*.js',
-		    settings.tsOutputPath + '/**/*.js.map',
-		    '!' + settings.tsOutputPath + '/lib'
-	], cb);
-});
+function tsClean() {
+	return del([
+		settings.tsOutputPath + '/**/*.js',
+		settings.tsOutputPath + '/**/*.js.map',
+		'!' + settings.tsOutputPath + '/lib'
+	]);
+}
+tsClean.description = 'Cleaning compiled sources';
 
-gulp.task('watch', () => {
-	gulp.watch([settings.allTypeScript], ['ts-lint', 'compile-ts']);
-});
+function watch() {
+	gulp.watch([settings.allTypeScript], gulp.series('ts:lint', 'ts:compile'));
+	gulp.watch([settings.sourceApp + '/index.html'], gulp.series('copy:assets'));
+	gulp.watch([settings.sourceApp + '/**/*.css'], gulp.series('copy:assets'));
+	gulp.watch([settings.sourceApp + '/**/*.js'], gulp.series('copy:assets')); //?
+}
+watch.description = 'Watching TypeScript sources';
 
-gulp.task('serve', ['compile-ts', 'watch'], () => {
-	process.stdout.write('Starting browserSync and superstatic...\n');
+function serve() {
 	browserSync({
 		port: 3000,
-		files: ['index.html', '**/*.js', '**/*.css'].map(file => settings.sourceApp + '/' + file),
+		files: [
+			'/index.html',
+			'/**/*.js',
+			'/**/*.css',
+			'/**/*.png', '/**/*.jpg', '/**/*.jpeg', '/**/*.gif'
+		].map(file => settings.dist + file),
 		injectChanges: true,
 		logFileChanges: true,
-		logLevel: 'silent',
+		logLevel: 'debug',
 		logPrefix: 'event-planner',
 		notify: true,
 		reloadDelay: 0,
+		ghostMode: {
+			clicks: true,
+			forms: true,
+			scroll: true
+		},
+		tunnel: true,
+		open: 'tunnel',
 		server: {
-			baseDir: ['app', '.']//,
-			//middleware: superstatic({debug: false})
+			baseDir: ['dist'],
+			middleware: [historyApiFallback()]//superstatic({debug: false})
+		},
+		ui: {
+			port: 3030
 		}
 	});
-});
+}
+serve.description = 'Starting browserSync';
 
-gulp.task('tsdoc', () => {
+function tsDoc() {
 	let tsDocSettings = {
-		module: 'system',
+		module: 'commonjs',
 		target: 'es5',
-		includeDeclarations: true,
-		exclude: 'node_modules/**',
 		mode: 'file',
+		experimentalDecorators: true,
 
 		out: './docs',
 
 		name: 'Udacity Event Planner',
 		readme: './README.md',
 		theme: 'default',
+
 		ignoreCompilerErrors: false,
 		hideGenerator: true,
-		verbose: true,
-		version: true
+		verbose: true
 	};
 
 	return gulp
-		.src(settings.allTypeScript)
+		.src([...settings.allTypings, settings.allTypeScript])
 		.pipe(typedoc(tsDocSettings));
-});
+}
+tsDoc.description = 'Generating TypeScript documentation';
 
-gulp.task('copy:libs', () => {
+function copyLibs() {
 	return gulp
 		.src([
 			'node_modules/angular2/bundles/angular2-polyfills.js',
@@ -115,13 +176,14 @@ gulp.task('copy:libs', () => {
 			'node_modules/angular2/bundles/router.dev.js',
 			'node_modules/angular2/bundles/http.dev.js'
 		])
-		.pipe(settings.libOutputPath);
-});
+		.pipe(gulp.dest(settings.libOutputPath));
+}
+copyLibs.description = 'Copying libs to distribution folder';
 
-gulp.task('copy:assets', () => {
+function copyAssets() {
 	return gulp
 		.src(settings.allAssets)
-		.pipe(settings.dist);
-});
+		.pipe(gulp.dest(settings.dist));
+}
+copyAssets.description = 'Copying assets to distribution folder';
 
-gulp.task('default', ['ts-lint', 'compile-ts']);
