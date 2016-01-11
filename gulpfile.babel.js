@@ -52,19 +52,10 @@ gulp.task('watch', watch);
 gulp.task('ts:doc', tsDoc);
 gulp.task('copy:libs', copyLibs);
 gulp.task('copy:assets', copyAssets);
-gulp.task('serve',
-	gulp.parallel(
-		'watch',
-		gulp.series(
-			gulp.parallel(
-				'copy:libs',
-				'copy:assets',
-				gulp.series('ts:lint', 'ts:compile')
-			),
-			serve
-		)
-	)
-);
+gulp.task('clean', clean);
+gulp.task('build', gulp.parallel('copy:libs', 'copy:assets', gulp.series('ts:lint', 'ts:compile')));
+gulp.task('build:clean', gulp.series('clean', 'build'));
+gulp.task('serve', gulp.parallel('watch', gulp.series('build', serve)));
 gulp.task('default', gulp.series('serve'));
 
 function tsLint() {
@@ -100,6 +91,11 @@ function tsClean() {
 	]);
 }
 tsClean.description = 'Cleaning compiled sources';
+
+function clean() {
+	return del([settings.dist]);
+}
+clean.description = 'Cleaning entire dist';
 
 function watch() {
 	gulp.watch([settings.allTypeScript], gulp.series('ts:lint', 'ts:compile'));
