@@ -9,11 +9,18 @@
  */
 class Settings {
 	constructor() {
+		this.appName = 'Udacity Event Planner';
+
+		this.docsFolder = './docs';
+		this.readmeFile = './README.md';
+
 		this.sourceApp = './app';
 		this.dist = './dist';
+
 		this.tsOutputPath = this.dist + '/js';
 		this.libOutputPath = this.tsOutputPath + '/lib';
 		this.allJavaScript = [this.dist + '/js/**/*.js'];
+
 		this.allTypeScript = this.sourceApp + '/**/*.ts';
 		this.allTypings = [
 			'./typings/**/*.d.ts'
@@ -24,6 +31,15 @@ class Settings {
 		];
 		this.typingsOutputPath = './typings/typescriptApp.d.ts';
 		this.libraryTypeScriptDefinitions = './typings/**/*.ts';
+
+		this.jsLibs = [
+			'node_modules/angular2/bundles/angular2-polyfills.js',
+			'node_modules/systemjs/dist/system.src.js',
+			'node_modules/rxjs/bundles/Rx.js',
+			'node_modules/angular2/bundles/angular2.dev.js',
+			'node_modules/angular2/bundles/router.dev.js',
+			'node_modules/angular2/bundles/http.dev.js'
+		];
 	}
 }
 const settings = new Settings();
@@ -128,7 +144,7 @@ function serve() {
 		tunnel: true,
 		open: 'tunnel',
 		server: {
-			baseDir: ['dist'],
+			baseDir: [settings.dist],
 			middleware: [historyApiFallback()]//superstatic({debug: false})
 		},
 		ui: {
@@ -145,10 +161,10 @@ function tsDoc() {
 		mode: 'file',
 		experimentalDecorators: true,
 
-		out: './docs',
+		out: settings.docsFolder,
 
-		name: 'Udacity Event Planner',
-		readme: './README.md',
+		name: settings.appName,
+		readme: settings.readmeFile,
 		theme: 'default',
 
 		ignoreCompilerErrors: false,
@@ -164,14 +180,7 @@ tsDoc.description = 'Generating TypeScript documentation';
 
 function copyLibs() {
 	return gulp
-		.src([
-			'node_modules/angular2/bundles/angular2-polyfills.js',
-			'node_modules/systemjs/dist/system.src.js',
-			'node_modules/rxjs/bundles/Rx.js',
-			'node_modules/angular2/bundles/angular2.dev.js',
-			'node_modules/angular2/bundles/router.dev.js',
-			'node_modules/angular2/bundles/http.dev.js'
-		])
+		.src(settings.jsLibs)
 		.pipe(gulp.dest(settings.libOutputPath));
 }
 copyLibs.description = 'Copying libs to distribution folder';
