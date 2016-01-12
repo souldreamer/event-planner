@@ -2,6 +2,7 @@
   <dictionary name="Ionut">
     <words>
       <w>decl</w>
+      <w>endinject</w>
       <w>eofline</w>
       <w>forin</w>
       <w>nanodegree</w>
@@ -13,6 +14,7 @@
       <w>reactivex</w>
       <w>rxjs</w>
       <w>sourcemaps</w>
+      <w>starttag</w>
       <w>superstatic</w>
       <w>systemjs</w>
       <w>tsconfig</w>

@@ -4,26 +4,32 @@
 <head>
 	<base href="/">
 	<link rel="stylesheet" href="styles.css">
-	<script src="./js/lib/angular2-polyfills.js"></script>
-	<script src="./js/lib/system.src.js"></script>
-	<script src="./js/lib/Rx.js"></script>
-	<script src="./js/lib/angular2.dev.js"></script>
-	<script src="./js/lib/router.dev.js"></script>
-	<script src="./js/lib/http.dev.js"></script>
+	<!-- inject:libs -->
+	<!--   add wanted libs to gulpfile -->
+	<!-- endinject -->
 	<script>
 		System.config({
-			defaultJSExtensions: true,
-			baseURL: './js',
-			map: {
-				'angular2/platform/browser': '/js/lib/angular2.dev.js',
-				'angular2/core': '/js/lib/angular2.dev.js',
-				'angular2/http': '/js/lib/http.dev.js',
-				'angular2/router': '/js/lib/router.dev.js',
-				'rx/**': '/js/lib/Rx.js'
+			bundles: {
+				'./js/lib/angular2.dev.js': ['angular2/*']
+			},
+			packages: {
+				js: {
+					format: 'register',
+					defaultExtension: 'js'
+				}
+			},
+			paths: {
+				'angular/http': './js/lib/router.dev.js',
+				'angular/router': './js/lib/http.dev.js',
+				'angular2/*': './js/lib/angular2.dev.js',
+				'rx/*': './js/lib/Rx.js'
 			}
 		});
-		System.import('boot')
-		      .then(null, console.error.bind(console));
+		System.import('js/boot')
+			.then(
+				function() {console.log('loaded')},
+				console.error.bind(console)
+			);
 	</script>
 </head>
 
