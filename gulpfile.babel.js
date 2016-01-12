@@ -94,8 +94,6 @@ tsLint.description = 'Linting TypeScript sources';
 function tsCompile() {
 	var tsResult = gulp
 		.src([settings.allTypeScript, settings.libraryTypeScriptDefinitions])
-		//.pipe(preprocess({context: process.env}))
-		//.pipe(inlineNg2Template({useRelativePaths: true}))
 		.pipe(sourcemaps.init())
 		.pipe(tsc(tsProject));
 

@@ -9,6 +9,7 @@
 	<!-- endinject -->
 	<script>
 		System.config({
+			defaultJSExtensions: true,
 			bundles: {
 				'./js/lib/angular2.dev.js': ['angular2/*']
 			},
@@ -16,13 +17,17 @@
 				js: {
 					format: 'register',
 					defaultExtension: 'js'
+				},
+				angular2: {
+					format: 'register'
 				}
 			},
 			paths: {
-				'angular/http': './js/lib/router.dev.js',
-				'angular/router': './js/lib/http.dev.js',
+				'angular2/http': './js/lib/router.dev.js',
+				'angular2/router': './js/lib/http.dev.js',
 				'angular2/*': './js/lib/angular2.dev.js',
-				'rx/*': './js/lib/Rx.js'
+				'rx/*': './js/lib/Rx.js',
+				'js/*': './js/*.js'
 			}
 		});
 		System.import('js/boot')

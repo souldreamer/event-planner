@@ -17,6 +17,7 @@
       <w>starttag</w>
       <w>superstatic</w>
       <w>systemjs</w>
+      <w>transpiler</w>
       <w>tsconfig</w>
       <w>tsdoc</w>
       <w>tslint</w>
