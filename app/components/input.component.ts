@@ -18,6 +18,7 @@ export class InputComponent {
 	constructor() {
 		InputComponent.latestId++;
 	}
+
 	get inputName(): string {
 		return 'input-' + this.inputId;
 	}

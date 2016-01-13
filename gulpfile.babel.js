@@ -92,7 +92,7 @@ function tsLint() {
 tsLint.description = 'Linting TypeScript sources';
 
 function tsCompile() {
-	var tsResult = gulp
+	let tsResult = gulp
 		.src([settings.allTypeScript, settings.libraryTypeScriptDefinitions])
 		.pipe(sourcemaps.init())
 		.pipe(tsc(tsProject));
