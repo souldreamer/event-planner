@@ -135,27 +135,27 @@ watch.description = 'Watching TypeScript sources';
 function serve() {
 	browserSync({
 		port: 3000,
-//		files: settings.watchFiles,
-//		injectChanges: true,
+		files: settings.watchFiles,
+		injectChanges: true,
 		logFileChanges: true,
 		logLevel: 'info',
 		logPrefix: 'event-planner',
 		notify: true,
 		reloadDelay: 0,
-//		ghostMode: {
-//			clicks: true,
-//			forms: true,
-//			scroll: true
-//		},
-//		tunnel: true,
-//		open: 'tunnel',
+		ghostMode: {
+			clicks: true,
+			forms: true,
+			scroll: true
+		},
+		tunnel: true,
+		open: 'tunnel',
 		server: {
-			baseDir: [settings.dist]//,
-//			middleware: [historyApiFallback()]//superstatic({debug: false})
-		}//,
-//		ui: {
-//			port: 3030
-//		}
+			baseDir: [settings.dist],
+			middleware: [historyApiFallback()]//superstatic({debug: false})
+		},
+		ui: {
+			port: 3030
+		}
 	});
 }
 serve.description = 'Starting browserSync';

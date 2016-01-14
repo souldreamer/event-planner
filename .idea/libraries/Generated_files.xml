@@ -3,12 +3,12 @@
     <properties>
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/app/boot.js" />
-        <item url="file://$PROJECT_DIR$/app/boot.js" />
+        <item url="file://$PROJECT_DIR$/app/components/input.component.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/app/boot.js" />
-      <root url="file://$PROJECT_DIR$/app/boot.js" />
+      <root url="file://$PROJECT_DIR$/app/components/input.component.js" />
     </CLASSES>
     <SOURCES />
   </library>
