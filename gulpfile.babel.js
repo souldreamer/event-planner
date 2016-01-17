@@ -14,11 +14,11 @@ class Settings {
 		this.docsFolder = './docs';
 		this.readmeFile = './README.md';
 
-		this.sourceApp = './app';
+		this.sourceApp = './src';
 		this.dist = './dist';
 
 		this.tsOutputPath = `${this.dist}/js`;
-		this.allTypeScript = `${this.sourceApp}/**/*.ts`;
+		this.allTypeScript = `${this.sourceApp}/app/**/*.ts`;
 		this.allTypings = [
 			'./typings/**/*.d.ts'
 		];
