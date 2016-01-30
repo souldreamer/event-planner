@@ -41,7 +41,7 @@
     "sort-stream": "^1.0.1",
     "superstatic": "^4.0.1",
     "tslint": "^3.2.1",
-    "typescript": "^1.7.5",
+    "typescript": "^1.9.0-dev.20160129",
     "typings": "^0.6.0"
   },
   "dependencies": {
