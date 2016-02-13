@@ -1,0 +1,43 @@
+<html>
+<head>
+	<title>Tests</title>
+	<base href="/tests">
+	<!-- inject:libs:css -->
+	<link rel="stylesheet" href="../node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+	<!-- endinject -->
+	<!-- inject:libs -->
+	<script src="../node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+	<script src="../node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+	<script src="../node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+	<!-- endinject -->
+	<!-- inject:tests -->
+	<!-- endinject -->
+</head>
+<body>
+	<script>
+		describe('very basic functionality', function() {
+			it('works', function() {
+				expect(true).toEqual(true);
+			})
+		});
+
+		System.config({
+			packages: {
+				tests: {
+					format: 'register',
+					defaultExtension: 'js',
+					map: {
+						'../../src': 'dist/js'
+					}
+				},
+				dist: {
+					format: 'register',
+					defaultExtension: 'js'
+				}
+			}
+		});
+		/* inject:js:imports */
+		/* endinject */
+	</script>
+</body>
+</html>

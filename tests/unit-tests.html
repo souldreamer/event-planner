@@ -1,0 +1,52 @@
+<html>
+<head>
+	<title>Tests</title>
+	<base href="/tests">
+	<!-- inject:libs:css -->
+	<link rel="stylesheet" href="tests/compiled/lib/styles/jasmine.css">
+	<!-- endinject -->
+	<!-- inject:libs -->
+	<script src="tests/compiled/lib/jasmine.js"></script>
+	<script src="tests/compiled/lib/jasmine-html.js"></script>
+	<script src="tests/compiled/lib/boot.js"></script>
+	<script src="tests/compiled/lib/es6-shim.js"></script>
+	<script src="tests/compiled/lib/angular2-polyfills.js"></script>
+	<script src="tests/compiled/lib/system.src.js"></script>
+	<script src="tests/compiled/lib/Rx.js"></script>
+	<script src="tests/compiled/lib/angular2.dev.js"></script>
+	<script src="tests/compiled/lib/router.dev.js"></script>
+	<script src="tests/compiled/lib/http.dev.js"></script>
+	<script src="tests/compiled/lib/testing.dev.js"></script>
+	<!-- endinject -->
+	<!-- inject:tests -->
+	<!-- endinject -->
+</head>
+<body>
+	<script>
+		describe('very basic functionality', function() {
+			it('works', function() {
+				expect(true).toEqual(true);
+			})
+		});
+
+		System.config({
+			packages: {
+				tests: {
+					format: 'register',
+					defaultExtension: 'js',
+					map: {
+						'../../src': 'dist/js'
+					}
+				},
+				dist: {
+					format: 'register',
+					defaultExtension: 'js'
+				}
+			}
+		});
+		/* inject:js:imports */
+		System.import('tests/compiled/basic.spec.js');
+		/* endinject */
+	</script>
+</body>
+</html>

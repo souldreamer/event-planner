@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"outDir": "dist/js",
 		"target": "ES5",
 		"module": "system",
 		"moduleResolution": "node",
