@@ -20,7 +20,8 @@ class Settings {
 		this.tsOutputPath = `${this.dist}/js`;
 		this.allTypeScript = `${this.sourceApp}/**/*.ts`;
 		this.allTypings = [
-			'./typings/**/*.d.ts'
+			'./typings/typescriptApp.d.ts',
+			'./typings/browser.d.ts'
 		];
 		this.typingsOutputPath = './typings/typescriptApp.d.ts';
 
