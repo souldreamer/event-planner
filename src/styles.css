@@ -1,1 +1,9 @@
 /* Nothing yet */
+label {
+	display: block;
+}
+label > span {
+	display: block;
+}
+label > input {
+}

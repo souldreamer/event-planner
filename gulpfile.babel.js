@@ -185,8 +185,6 @@ function serve() {
 			forms: true,
 			scroll: true
 		},
-		tunnel: true,
-		open: 'tunnel',
 		server: {
 			baseDir: [settings.dist],
 			middleware: [historyApiFallback()]//superstatic({debug: false})
