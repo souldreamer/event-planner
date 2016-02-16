@@ -1,0 +1,8 @@
+$md-font-url: "../../node_modules/ng2-material/dist";
+@import "../../node_modules/ng2-material/dist/font";
+@import "../../node_modules/ng2-material/source/core";
+$md-primary: md-palette($md-light-blue, 500, 100, 700, $md-contrast-palettes);
+$md-accent: md-palette($md-deep-orange, 500, 300, 700, $md-contrast-palettes);
+@import "../../node_modules/ng2-material/source/components";
+
+
