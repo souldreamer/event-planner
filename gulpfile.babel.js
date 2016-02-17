@@ -157,15 +157,26 @@ function clean() {
 }
 clean.description = 'Cleaning entire dist';
 
+function delayedBrowserSyncReload() {
+	if (this.timer === null) {
+		this.timer = setTimeout(() => {
+			browserSync.reload();
+			this.timer = null;
+		}, this.delay);
+	}
+}
+delayedBrowserSyncReload.timer = null;
+delayedBrowserSyncReload.delay = 1000;
+
 function watch() {
-	gulp.watch([settings.allTypeScript], gulp.series(/*'ts:lint',*/ 'ts:compile')).on('change', () => browserSync.reload());
-	gulp.watch([settings.indexHtml], gulp.series('copy:assets')).on('change', () => browserSync.reload());
+	gulp.watch([settings.allTypeScript], gulp.series(/*'ts:lint',*/ 'ts:compile')).on('change', delayedBrowserSyncReload);
+	gulp.watch([settings.indexHtml], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
 	gulp.watch([
 		`${settings.sourceApp}/**/*.html`,
 		`!${settings.indexHtml}`
-	], gulp.series('copy:assets')).on('change', () => browserSync.reload());
-	gulp.watch([`${settings.sourceApp}/**/*.css`], gulp.series('copy:assets')).on('change', () => browserSync.reload());
-	gulp.watch([`${settings.sourceApp}/**/*.js`], gulp.series('copy:assets')).on('change', () => browserSync.reload()); //?
+	], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
+	gulp.watch([`${settings.sourceApp}/**/*.css`], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
+	gulp.watch([`${settings.sourceApp}/**/*.js`], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
 	return Promise.resolve();
 }
 watch.description = 'Watching TypeScript sources';
@@ -367,8 +378,8 @@ function testsClean() {
 testsClean.description = 'Clean compiled test files';
 
 function testsWatch() {
-	gulp.watch([settings.testMainPre], gulp.series('tests:build:index')).on('change', () => browserSync.reload());
-	gulp.watch([settings.testFiles], gulp.series('tests:build')).on('change', () => browserSync.reload());
+	gulp.watch([settings.testMainPre], gulp.series('tests:build:index')).on('change', delayedBrowserSyncReload);
+	gulp.watch([settings.testFiles], gulp.series('tests:build')).on('change', delayedBrowserSyncReload);
 	watch();
 	return Promise.resolve();
 }
