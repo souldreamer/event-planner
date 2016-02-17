@@ -157,16 +157,23 @@ function clean() {
 }
 clean.description = 'Cleaning entire dist';
 
-function delayedBrowserSyncReload() {
-	if (this.timer === null) {
-		this.timer = setTimeout(() => {
-			browserSync.reload();
-			this.timer = null;
-		}, this.delay);
+class DelayedBrowserSync {
+	constructor() {
+		this.timer = null;
+		this.delay = 1000;
+	}
+
+	reload() {
+		if (this.timer === null) {
+			this.timer = setTimeout(() => {
+				browserSync.reload();
+				this.timer = null;
+			}, this.delay);
+		}
 	}
 }
-delayedBrowserSyncReload.timer = null;
-delayedBrowserSyncReload.delay = 1000;
+let delayedBrowserSync = new DelayedBrowserSync();
+let delayedBrowserSyncReload = () => delayedBrowserSync.reload();
 
 function watch() {
 	gulp.watch([settings.allTypeScript], gulp.series(/*'ts:lint',*/ 'ts:compile')).on('change', delayedBrowserSyncReload);
