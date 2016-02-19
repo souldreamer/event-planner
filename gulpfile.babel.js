@@ -91,7 +91,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const tsProject = tsc.createProject('tsconfig.json', {typescript: require('typescript')});
 const merge = require('merge2');
-const browserSync = require('browser-sync').create(undefined, undefined);
+const browserSync = require('./tasks/delayed-browser-sync');
 const superstatic = require('superstatic');
 const typedoc = require('gulp-typedoc');
 const historyApiFallback = require('connect-history-api-fallback');
@@ -157,39 +157,22 @@ function clean() {
 }
 clean.description = 'Cleaning entire dist';
 
-class DelayedBrowserSync {
-	constructor() {
-		this.timer = null;
-		this.delay = 1000;
-	}
-
-	reload() {
-		if (this.timer === null) {
-			this.timer = setTimeout(() => {
-				browserSync.reload();
-				this.timer = null;
-			}, this.delay);
-		}
-	}
-}
-let delayedBrowserSync = new DelayedBrowserSync();
-let delayedBrowserSyncReload = () => delayedBrowserSync.reload();
 
 function watch() {
-	gulp.watch([settings.allTypeScript], gulp.series(/*'ts:lint',*/ 'ts:compile')).on('change', delayedBrowserSyncReload);
-	gulp.watch([settings.indexHtml], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
+	gulp.watch([settings.allTypeScript], gulp.series(/*'ts:lint',*/ 'ts:compile')).on('change', browserSync.reload);
+	gulp.watch([settings.indexHtml], gulp.series('copy:assets')).on('change', browserSync.reload);
 	gulp.watch([
 		`${settings.sourceApp}/**/*.html`,
 		`!${settings.indexHtml}`
-	], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
-	gulp.watch([`${settings.sourceApp}/**/*.css`], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
-	gulp.watch([`${settings.sourceApp}/**/*.js`], gulp.series('copy:assets')).on('change', delayedBrowserSyncReload);
+	], gulp.series('copy:assets')).on('change', browserSync.reload);
+	gulp.watch([`${settings.sourceApp}/**/*.css`], gulp.series('copy:assets')).on('change', browserSync.reload);
+	gulp.watch([`${settings.sourceApp}/**/*.js`], gulp.series('copy:assets')).on('change', browserSync.reload);
 	return Promise.resolve();
 }
 watch.description = 'Watching TypeScript sources';
 
 function serve() {
-	browserSync.init({
+	browserSync.main.init({
 		port: 3000,
 		files: settings.watchFiles,
 		injectChanges: true,
@@ -307,7 +290,7 @@ function testsCompile() {
 testsCompile.description = 'Compiling test files';
 
 function testsRun() {
-	browserSync.init({
+	browserSync.main.init({
 		port: 3050,
 		files: [settings.testFilesOutGlob, settings.testMain, settings.watchFiles],
 		injectChanges: true,
@@ -385,8 +368,8 @@ function testsClean() {
 testsClean.description = 'Clean compiled test files';
 
 function testsWatch() {
-	gulp.watch([settings.testMainPre], gulp.series('tests:build:index')).on('change', delayedBrowserSyncReload);
-	gulp.watch([settings.testFiles], gulp.series('tests:build')).on('change', delayedBrowserSyncReload);
+	gulp.watch([settings.testMainPre], gulp.series('tests:build:index')).on('change', browserSync.reload);
+	gulp.watch([settings.testFiles], gulp.series('tests:build')).on('change', browserSync.reload);
 	watch();
 	return Promise.resolve();
 }
