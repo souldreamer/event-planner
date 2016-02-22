@@ -1,7 +1,7 @@
 'use strict';
 
 const gulp = require('gulp');
-const compileTypescript = require('./common/typescript-compile').compile;
+const typescript = require('./common/typescript');
 
 const settings = require('./tasks/common/settings');
 
@@ -12,7 +12,7 @@ const tslint = require('gulp-tslint');
 const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const merge = require('merge2');
-const browserSync = require('./tasks/common/delayed-browser-sync');
+const browserSync = require('./common/delayed-browser-sync');
 const superstatic = require('superstatic');
 const typedoc = require('gulp-typedoc');
 const historyApiFallback = require('connect-history-api-fallback');
@@ -39,15 +39,12 @@ gulp.task('serve', gulp.parallel('watch', gulp.series('build:clean', serve)));
 gulp.task('default', gulp.series('serve'));
 
 function tsLint() {
-	return gulp
-		.src(settings.allTypeScript)
-		.pipe(tslint())
-		.pipe(tslint.report('verbose'));
+	return typescript.lint(settings.allTypeScript);
 }
 tsLint.description = 'Linting TypeScript sources';
 
 function tsCompile() {
-	return compileTypescript(
+	return typescript.compile(
 		[settings.allTypeScript, ...settings.allTypings],
 		settings.tsOutputPath,
 		settings.typingsOutputPath
@@ -71,28 +68,21 @@ clean.description = 'Cleaning entire dist';
 
 
 function watch() {
-	gulp.watch([settings.allTypeScript], gulp.series(/*'ts:lint',*/ 'ts:compile')).on('change', browserSync.reload);
-	gulp.watch([settings.indexHtml], gulp.series('copy:assets')).on('change', browserSync.reload);
-	gulp.watch([
-		`${settings.sourceApp}/**/*.html`,
-		`!${settings.indexHtml}`
-	], gulp.series('copy:assets')).on('change', browserSync.reload);
-	gulp.watch([`${settings.sourceApp}/**/*.css`], gulp.series('copy:assets')).on('change', browserSync.reload);
-	gulp.watch([`${settings.sourceApp}/**/*.js`], gulp.series('copy:assets')).on('change', browserSync.reload);
-	return Promise.resolve();
+	return browserSync.watch([
+		{sources: settings.allTypeScript, task: gulp.series(/*'ts:lint',*/ 'ts:compile')},
+		{sources: settings.indexHtml, task: gulp.series('copy:assets')},
+		{sources: [`${settings.sourceApp}/**/*.html`, `!${settings.indexHtml}`], task: gulp.series('copy:assets')},
+		{sources: `${settings.sourceApp}/**/*.css`, task: gulp.series('copy:assets')},
+		{sources: `${settings.sourceApp}/**/*.js`, task: gulp.series('copy:assets')}
+	]);
 }
 watch.description = 'Watching TypeScript sources';
 
 function serve() {
-	browserSync.main.init({
+	browserSync.init({
 		port: 3000,
 		files: settings.watchFiles,
-		injectChanges: true,
-		logFileChanges: true,
-		logLevel: 'info',
 		logPrefix: 'event-planner',
-		notify: true,
-		reloadDelay: 0,
 		ghostMode: {
 			clicks: true,
 			forms: true,
@@ -100,7 +90,7 @@ function serve() {
 		},
 		server: {
 			baseDir: [settings.dist],
-			middleware: [historyApiFallback()]//superstatic({debug: false})
+			middleware: [historyApiFallback()]
 		},
 		ui: {
 			port: 3030
