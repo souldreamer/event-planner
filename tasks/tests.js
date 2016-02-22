@@ -1,7 +1,7 @@
 'use strict';
 
 const gulp = require('gulp');
-const compileTypescript = require('./common/typescript-compile').compile;
+const compileTypescript = require('./common/typescript').compile;
 
 const settings = require('./tasks/common/settings');
 
@@ -12,7 +12,7 @@ const tslint = require('gulp-tslint');
 const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 const merge = require('merge2');
-const browserSync = require('./tasks/common/delayed-browser-sync');
+const browserSync = require('./common/delayed-browser-sync');
 const superstatic = require('superstatic');
 const typedoc = require('gulp-typedoc');
 const preprocess = require('gulp-preprocess');
